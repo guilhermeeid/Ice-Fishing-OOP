@@ -38,7 +38,7 @@ This project is a tribute to the *Ice Fishing* mini-game, recreated using:
 ## 🚀 How to Run
 
 ### 🔧 Prerequisites
-- [Java JDK 17+](https://adoptium.net/) installed  
+- [Java JDK 17+](https://www.oracle.com/br/java/technologies/downloads/) installed  
 
 ### ▶️ Running the Game
 
