@@ -5,7 +5,7 @@ import java.awt.event.*;
 public class Homepage extends JPanel {
     Image backgroundImage;
     public Homepage() {
-        ImageIcon icon = new ImageIcon("src/Sprites/pixil-layer-1.png");
+        ImageIcon icon = new ImageIcon("/SpritesHD/Background_HD.png");
         backgroundImage = icon.getImage();
     }
     
