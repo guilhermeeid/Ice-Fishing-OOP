@@ -1,24 +1,32 @@
 package OurGame.Model;
-import javax.swing.JPanel;
 
-import java.awt.Image;
-import javax.swing.ImageIcon;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import javax.swing.*;
+import java.awt.*;
 
 public class Startgame extends JPanel {
 
     private Image backgroundImage;
+    private Image iceLayer;
+    private Image penguinImage;
 
     public Startgame() {
-        ImageIcon icon = new ImageIcon("SpritesHD\\Background_HD.png");
-        backgroundImage = icon.getImage();
+        // Load images from the classpath
+        backgroundImage = new ImageIcon(getClass().getResource("/SpritesHD/Ocean_HD.png")).getImage();
+        iceLayer = new ImageIcon(getClass().getResource("/SpritesHD/Ice_HD.png")).getImage();
+        penguinImage = new ImageIcon(getClass().getResource("/SpritesHD/penguin_HD.png")).getImage();
     }
 
-    public void paint(Graphics g){
-        Graphics2D graphics = (Graphics2D) g;
-        graphics.drawImage(backgroundImage, 0, 0, null);
-        g.dispose();
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+
+        // Ocean Background
+        g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+
+        // Ice Layer
+        g2d.drawImage(iceLayer, 0, 0, getWidth(), getHeight(), this);
+
+        g2d.drawImage(penguinImage, 910, 0, penguinImage.getWidth(null), penguinImage.getHeight(null), this);
     }
-    
 }
