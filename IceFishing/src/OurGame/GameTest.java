@@ -1,22 +1,45 @@
 package OurGame;
-import javax.swing.JFrame;
 
-import OurGame.Model.Startgame;
+import javax.swing.*;
+import OurGame.Model.*;
 
+import java.awt.*;
 
 public class GameTest extends JFrame {
+
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+
     public GameTest() {
-        add(new Startgame());
         setTitle("Ice Fishing");
         setSize(1920, 1080);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        this.setResizable(false);
+        setResizable(false);
+
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
+
+        // Cria as telas
+        Homepage homepage = new Homepage(this);
+        Instructions instructions = new Instructions(this);
+        Startgame startgame = new Startgame();
+
+        // Adiciona ao painel principal com nomes únicos
+        mainPanel.add(homepage, "Homepage");
+        mainPanel.add(instructions, "Instructions");
+        mainPanel.add(startgame, "Startgame");
+
+        add(mainPanel);
         setVisible(true);
     }
-    
+
+    // Método público para trocar de tela
+    public void showScreen(String name) {
+        cardLayout.show(mainPanel, name);
+    }
+
     public static void main(String[] args) {
         new GameTest();
-    
     }
 }
