@@ -156,10 +156,11 @@ Main.java
 /assets
   (images, sprites, instructions)
 ```
+---
 
 ## 👥 Authors
 
-🪡 Meet the authors:
+#### **🔗 Meet the authors:**
 
 - **[Antônio Magalhães Roquete Macedo](https://github.com/antonio-mrm)**
 - **[Guilherme Eid Godoy](https://github.com/guilhermeeid)**
