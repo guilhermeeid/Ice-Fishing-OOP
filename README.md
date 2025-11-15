@@ -1,49 +1,166 @@
-# 🎣 Ice Fishing – Java Remake
+# 🧊🎣 Fishing MiniGame – Java & Object-Oriented Programming
 
-A **Java-based** recreation of the classic *Ice Fishing* mini-game from *Club Penguin*, featuring **original pixel art** and gameplay!  
-Catch fish, avoid obstacles, and challenge yourself to beat your own high score in a nostalgic experience. 🐟❄️
-
----
-
-## 🧊 About the Project
-
-This project is a tribute to the *Ice Fishing* mini-game, recreated using:
-- **Pure Java** (no external game engines)  
-- **Hand-drawn pixel art**, inspired by the original retro game style  
-- **Classic mechanics**: fishing, dodging jellyfish, catching rare fish  
+> This project is a **fishing minigame** developed in **Java**, applying core principles of **Object-Oriented Programming (OOP)**. The goal is to catch as many fish as possible while managing bait, avoiding underwater hazards, and controlling the hook's depth using the mouse.
+>> Inspired by Club Penguin's Ice Fishing, the mini-game has been redesigned with original 2D pixel art graphics, sounds, and music.
 
 ---
 
-## 🕹️ Features
+## 🖥️ Main Features
 
-✅ Full fishing system with line, bait, and resistance  
-✅ Physics-based collisions and frame-by-frame animations  
-✅ Retro-style interface with score, lives, and animated HUD  
-✅ 8-bit inspired sound effects  
-✅ High Score mode  
-✅ Windowed or fullscreen mode  
+### **Start Screen**
+
+* Two buttons: **Play** and **Instructions**.
+* **Instructions** opens a full-screen image with an **“X”** button to return to the start screen.
+* **Play** begins the game immediately.
+
+![Start Screen Screenshot](https://github.com/guilhermeeid/Ice-Fishing-OOP/blob/main/IceFishing/src/SpritesHD/Start%20Screen.png)
+
+### 🖱️ **Gameplay**
+
+* The player controls the **hook depth** by moving the mouse vertically. 🪝
+* The game starts with:
+
+  * **1 fishing line** 🪡
+  * **3 worm baits** (one already equipped) 🪱
+* The top-left corner displays the remaining number of worms.
+* At the surface:
+
+  * A **fish box**, initially empty, showing the number of caught fish.
+  * A **worm can** to select new bait.
+  * Both are **clickable**.
+
+![GIF](https://gifdb.com/images/high/club-penguin-fishing-o3k9oqxyjc5nlklz.gif)
+
+* Check it out on YouTube
+  * [Gameplay video](https://www.youtube.com/)
 
 ---
 
-## 💻 Technologies Used
+## 🐟 Aquatic Entities
 
-| Technology | Usage |
-|-------------|-------|
-| **Java 17+** | Game logic and rendering |
-| **Swing / AWT** | GUI and 2D canvas |
-| **Custom Pixel Art** | Sprites and tiles |
+### **Common Fish**
+
+* **Golden Fish** and **Grey Fish**
+
+  * Are hooked upon colliding with a worm.
+  * Do *not* consume the worm.
+  * When brought to the surface, they are added to the fish box.
+
+### **Mullet Fish**
+
+* Can only be caught **using a Golden Fish as bait**.
+* To equip a Golden Fish as bait:
+
+  1. Reel the line back to the surface.
+  2. Click the fish box.
+  3. One caught Golden Fish is moved to the hook, replacing the worm.
+* If the player clicks the worm can while a Golden Fish is unused on the hook, it returns to the fish box and the worm becomes the current bait again.
+* After successfully catching a Mullet Fish:
+
+  * The Golden Fish bait is **consumed** and disappears from the hook.
 
 ---
 
-## 🚀 How to Run
+## 🦈🪼 Underwater Hazards
 
-### 🔧 Prerequisites
-- [Java JDK 17+](https://www.oracle.com/br/java/technologies/downloads/) installed  
+* **Sharks** and **Jellyfish**
 
-### ▶️ Running the Game
+  * Remove the current bait (worm or Golden Fish) and any hooked fish.
+  * Do *not* cut the line.
+* **Boot** 🥾
 
-#### Via command line:
-```bash
-javac -d bin src/**/*.java
-java -cp bin com.yourproject.Main
+  * Removes only the hooked fish, if any.
+* **Metal Can** 🥫
 
+  * **Cuts the fishing line** on collision.
+  * Instantly ends the game.
+
+---
+
+## 🏁 Game Over Conditions
+
+The game ends when:
+
+1. The line is **cut** by the Metal Can, or
+2. The number of worms reaches **zero**
+
+At the end of the game:
+
+* The **total number of caught fish** is displayed.
+* The **total play time** is shown.
+* The game returns to the start screen.
+
+---
+
+## 🧱 Object-Oriented Programming Concepts Used
+
+* **Classes and Objects** for each game entity (fish, hazards, bait, UI, etc.)
+* **Inheritance** to share behavior between aquatic entities
+* **Polymorphism** for different reactions when colliding with the hook
+* **Encapsulation** of internal states (current bait, worm count, line status)
+* **Composition and Aggregation** for structuring the game environment
+
+---
+
+## 🚀 How to Run the Project
+
+1. Make sure you have:
+
+   * **Java 17+**
+   * An IDE such as Eclipse, IntelliJ IDEA, or VS Code
+2. Compile the project:
+
+   ```bash
+   javac -d bin src/**/*.java
+   ```
+3. Run the game:
+
+   ```bash
+   java -cp bin Main
+   ```
+
+> *The name of the main class may vary depending on your code structure.*
+
+---
+
+## 📁 Project Structure
+
+```
+/src
+  /entities
+    Fish.java
+    GoldenFish.java
+    GreyFish.java
+    BigFish.java
+    ...
+  /items
+    Bait.java
+    Worm.java
+    GoldenFishBait.java
+  /hazards
+    Shark.java
+    Jellyfish.java
+    Boot.java
+    MetalCan.java
+  /ui
+    MainMenu.java
+    InstructionsScreen.java
+  /game
+    Game.java
+    Hook.java
+    Line.java
+Main.java
+
+/assets
+  (images, sprites, instructions)
+```
+
+## 👥 Authors
+
+🪡 Meet the authors:
+
+- **[Antônio Magalhães Roquete Macedo](https://github.com/antonio-mrm)**
+- **[Guilherme Eid Godoy](https://github.com/guilhermeeid)**
+- **[Lucas Espica Rezende](https://github.com/Lucasespica)**
+
+---
