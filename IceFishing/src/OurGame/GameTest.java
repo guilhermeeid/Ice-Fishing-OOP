@@ -1,7 +1,7 @@
 package OurGame;
 
 import javax.swing.*;
-import OurGame.Model.*;
+import OurGame.Screens.*;
 
 import java.awt.*;
 

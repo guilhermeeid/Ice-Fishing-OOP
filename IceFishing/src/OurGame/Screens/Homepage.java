@@ -1,4 +1,4 @@
-package OurGame.Model;
+package OurGame.Screens;
 
 import javax.swing.*;
 import java.awt.*;
