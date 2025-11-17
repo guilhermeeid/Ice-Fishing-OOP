@@ -1,4 +1,4 @@
-# 🧊🎣 Fishing MiniGame – Java & Object-Oriented Programming
+# 🧊🎣 Ice Fishing MiniGame – Java & Object-Oriented Programming
 
 > This project is a **fishing minigame** developed in **Java**, applying core principles of **Object-Oriented Programming (OOP)**. The goal is to catch as many fish as possible while managing bait, avoiding underwater hazards, and controlling the hook's depth using the mouse.
 >> Inspired by Club Penguin's Ice Fishing, the mini-game has been redesigned with original 2D pixel art graphics, sounds, and music.
@@ -120,8 +120,6 @@ At the end of the game:
    ```bash
    java -cp bin Main
    ```
-
-> *The name of the main class may vary depending on your code structure.*
 
 ---
 
