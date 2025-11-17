@@ -20,12 +20,10 @@ public class GameTest extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Cria as telas
         Homepage homepage = new Homepage(this);
         Instructions instructions = new Instructions(this);
         Startgame startgame = new Startgame();
 
-        // Adiciona ao painel principal com nomes únicos
         mainPanel.add(homepage, "Homepage");
         mainPanel.add(instructions, "Instructions");
         mainPanel.add(startgame, "Startgame");
@@ -34,7 +32,7 @@ public class GameTest extends JFrame {
         setVisible(true);
     }
 
-    // Método público para trocar de tela
+    
     public void showScreen(String name) {
         cardLayout.show(mainPanel, name);
     }

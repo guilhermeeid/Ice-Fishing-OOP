@@ -39,10 +39,13 @@ public class Startgame extends JPanel implements MouseMotionListener {
         backgroundImage = new ImageIcon(getClass().getResource("/SpritesHD/Ocean_HD.png")).getImage();
         iceLayer = new ImageIcon(getClass().getResource("/SpritesHD/Ice_HD.png")).getImage();
         penguinImage = new ImageIcon(getClass().getResource("/SpritesHD/penguin_HD.png")).getImage();
+
+        startEntities();
     }
 
     private void startEntities() {
-        hook = new Line(this, "/SpritesHD/hook_HD.png", hookX, hookY);
+        // We don't have hook image yet, so using a placeholder for now.
+        hook = new Line(this, "/SpritesHD/Box_0.png", hookX, hookY);
         entities.add(hook);
     }
 
@@ -71,14 +74,12 @@ public class Startgame extends JPanel implements MouseMotionListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-
         // Ocean Background
-        g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
 
         // Ice Layer
-        g2d.drawImage(iceLayer, 0, 0, getWidth(), getHeight(), this);
+        g.drawImage(iceLayer, 0, 0, getWidth(), getHeight(), this);
 
-        g2d.drawImage(penguinImage, 910, 0, penguinImage.getWidth(null), penguinImage.getHeight(null), this);
+        g.drawImage(penguinImage, 910, 0, penguinImage.getWidth(null), penguinImage.getHeight(null), this);
     }
 }
