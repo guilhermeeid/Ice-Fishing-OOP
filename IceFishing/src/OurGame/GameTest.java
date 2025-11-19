@@ -22,11 +22,12 @@ public class GameTest extends JFrame {
 
         Homepage homepage = new Homepage(this);
         Instructions instructions = new Instructions(this);
-        Startgame startgame = new Startgame();
+        Startgame startgame = new Startgame(this);
 
         mainPanel.add(homepage, "Homepage");
         mainPanel.add(instructions, "Instructions");
         mainPanel.add(startgame, "Startgame");
+        
 
         add(mainPanel);
         setVisible(true);

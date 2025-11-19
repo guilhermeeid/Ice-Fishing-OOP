@@ -2,6 +2,9 @@ package OurGame.Screens;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
+import OurGame.GameTest;
 import OurGame.Model.Entity;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -33,13 +36,35 @@ public class Startgame extends JPanel implements MouseMotionListener {
     private int hookMinY = 100;  //Suposing the ice layer is at y = 100. (To be adjusted later)
     private int hookMaxY = 1080; //Same as above.
 
-    public Startgame() {
+    public Startgame(GameTest frame) {
+
         // Load images from the classpath
         backgroundImage = new ImageIcon(getClass().getResource("/SpritesHD/Ocean_HD.png")).getImage();
         iceLayer = new ImageIcon(getClass().getResource("/SpritesHD/Ice_HD.png")).getImage();
         penguinImage = new ImageIcon(getClass().getResource("/SpritesHD/fishing_penguin.png")).getImage();
 
+        setLayout(null);
+
+        JButton closeToHomeButton = new JButton("");
+        closeToHomeButton.setBounds(1450, 20, 65, 65);
+        closeToHomeButton.setBorderPainted(false);
+        closeToHomeButton.setContentAreaFilled(false);
+        closeToHomeButton.setFocusPainted(false);
+        
+        closeToHomeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+
+        closeToHomeButton.addActionListener((ActionEvent e) -> {
+            frame.showScreen("Homepage");
+        });
+
+        
+        add(closeToHomeButton);
+        
+
         startEntities();
+
+        addMouseMotionListener(this);
     }
 
     private void startEntities() {
@@ -73,13 +98,15 @@ public class Startgame extends JPanel implements MouseMotionListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
         // Ocean Background
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-
+        System.out.println("Width: " + getWidth() + ", Height: " + getHeight());
         // Ice Layer
         g.drawImage(iceLayer, 0, 0, getWidth(), getHeight(), this);
 
-        //need to resize the penguin properly later @gui
-        g.drawImage(penguinImage, 300, 0, penguinImage.getWidth(null), penguinImage.getHeight(null), this);
+        // Penguin
+        g.drawImage(penguinImage, 748, 0, 410, 255, this);
     }
+
 }

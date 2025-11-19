@@ -16,7 +16,7 @@ public class Homepage extends JPanel {
         setLayout(null);
 
         JButton startButton = new JButton("");
-        startButton.setBounds(570, 360, 400, 90);
+        startButton.setBounds(570, 360, 395, 90);
         startButton.setBorderPainted(false);
         startButton.setContentAreaFilled(false);
         startButton.setFocusPainted(false);
@@ -28,7 +28,7 @@ public class Homepage extends JPanel {
         });
 
         JButton instructionsButton = new JButton("");
-        instructionsButton.setBounds(570, 495, 400, 90);
+        instructionsButton.setBounds(570, 495, 395, 90);
         instructionsButton.setBorderPainted(false);
         instructionsButton.setContentAreaFilled(false);
         instructionsButton.setFocusPainted(false);
