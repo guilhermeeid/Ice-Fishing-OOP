@@ -13,7 +13,7 @@
 * **Instructions** opens a full-screen image with an **“X”** button to return to the start screen.
 * **Play** begins the game immediately.
 
-![Start Screen Screenshot](https://github.com/guilhermeeid/Ice-Fishing-OOP/blob/main/IceFishing/src/SpritesHD/Start%20Screen.png)
+![Start Screen Screenshot](https://github.com/guilhermeeid/Ice-Fishing-OOP/blob/main/IceFishing/src/SpritesHD/Start%20Screen_HD.png)
 
 ### 🖱️ **Gameplay**
 
