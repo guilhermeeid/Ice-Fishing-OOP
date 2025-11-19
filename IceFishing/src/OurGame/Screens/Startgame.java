@@ -33,19 +33,18 @@ public class Startgame extends JPanel implements MouseMotionListener {
     private int hookMinY = 100;  //Suposing the ice layer is at y = 100. (To be adjusted later)
     private int hookMaxY = 1080; //Same as above.
 
-
     public Startgame() {
         // Load images from the classpath
         backgroundImage = new ImageIcon(getClass().getResource("/SpritesHD/Ocean_HD.png")).getImage();
         iceLayer = new ImageIcon(getClass().getResource("/SpritesHD/Ice_HD.png")).getImage();
-        penguinImage = new ImageIcon(getClass().getResource("/SpritesHD/penguin_HD.png")).getImage();
+        penguinImage = new ImageIcon(getClass().getResource("/SpritesHD/fishing_penguin.png")).getImage();
 
         startEntities();
     }
 
     private void startEntities() {
         // We don't have hook image yet, so using a placeholder for now.
-        hook = new Line(this, "/SpritesHD/Box_0.png", hookX, hookY);
+        hook = new Line(this, "/SpritesHD/hook.png", hookX, hookY);
         entities.add(hook);
     }
 
@@ -80,6 +79,7 @@ public class Startgame extends JPanel implements MouseMotionListener {
         // Ice Layer
         g.drawImage(iceLayer, 0, 0, getWidth(), getHeight(), this);
 
-        g.drawImage(penguinImage, 910, 0, penguinImage.getWidth(null), penguinImage.getHeight(null), this);
+        //need to resize the penguin properly later @gui
+        g.drawImage(penguinImage, 300, 0, penguinImage.getWidth(null), penguinImage.getHeight(null), this);
     }
 }
