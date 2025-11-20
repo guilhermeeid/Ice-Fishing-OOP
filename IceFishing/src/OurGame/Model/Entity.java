@@ -74,5 +74,5 @@ public abstract class Entity {
         return myBounds.intersects(himBounds);
     }
 
-    public abstract void closeByed(Entity other);
+    public void closeByed(Entity other) {}
 }

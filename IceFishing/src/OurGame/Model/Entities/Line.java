@@ -1,5 +1,6 @@
-package OurGame.Model;
+package OurGame.Model.Entities;
 
+import OurGame.Model.Entity;
 import OurGame.Screens.Startgame;
 
 public class Line extends Entity {
@@ -17,8 +18,4 @@ public class Line extends Entity {
         
     }
     
-    @Override
-    public void closeByed(Entity other) {
-    // Not used for Line, only for Shark
-    }
 }
