@@ -161,11 +161,11 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         //Need to connect this to the hashmap of entities @gui
         
         if (type < 30) { // 30% Gray Fish
-            newEntity = new GrayFish(this, "/SpritesHD/GrayFish-0_HD.png", startX, startY);
+            newEntity = new GrayFish(this, "/SpritesHD/GreyFish-0_HD.png", startX, startY);
         } else if (type < 50) { // 20% Golden Fish
             newEntity = new GoldenFish(this, "/SpritesHD/GoldFish-0_HD.png", startX, startY);
         } else if (type < 60) { // 10% Mullet Fish
-            newEntity = new MulletFish(this, "/SpritesHD/MulletFish-1_HD.png", startX, startY);
+            newEntity = new MulletFish(this, "/SpritesHD/MulletFish_1_HD.png", startX, startY);
         } else if (type < 75) { // 15% Shark
             newEntity = new Shark(this, "/SpritesHD/shark1_HD.png", startX, startY);
         } else if (type < 85) { // 10% Jellyfish
