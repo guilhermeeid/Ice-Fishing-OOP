@@ -3,11 +3,11 @@ package OurGame.Model;
  import java.awt.*;
 
 public abstract class Entity {
-    protected double x;
-    protected double y;
-    protected Sprite sprite;
-    protected double dx;
-    protected double dy;
+    protected double x;     
+    protected double y;     // current position
+    protected Sprite sprite;    
+    protected double dx;    // speed in x direction
+    protected double dy;    // speed in y direction
     public String fileName;
 
     private Rectangle myBounds = new Rectangle();
@@ -47,6 +47,8 @@ public abstract class Entity {
     public double getVerticalMovement(){
         return dy;
     }
+    private static final double SCALE = 1.0 / 2.4; // escala aplicada às entidades
+
     public int getX(){
         return (int) x;
     }
@@ -54,23 +56,43 @@ public abstract class Entity {
         return (int) y;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    // Retorna largura/altura escaladas (usadas para desenho e colisões)
+    public int getWidth() {
+        return (int) (sprite.getWidth() * SCALE);
+    }
+
+    public int getHeight() {
+        return (int) (sprite.getHeight() * SCALE);
+    }
+
     public void draw(Graphics g){
-        sprite.draw(g, (int)x, (int)y);
+        int w = getWidth();
+        int h = getHeight();
+        boolean flip = getHorizontalMovement() < 0;
+        sprite.draw(g, (int)x, (int)y, w, h, flip);
     }
 
     public void ownLogic() {}
 
     public boolean collidesWith(Entity other){
-        myBounds.setBounds((int)x, (int)y, sprite.getWidth(), sprite.getHeight());
-        himBounds.setBounds((int)other.getX(), (int)other.getY(), other.sprite.getWidth(), other.sprite.getHeight());
+        myBounds.setBounds((int)x, (int)y, getWidth(), getHeight());
+        himBounds.setBounds((int)other.getX(), (int)other.getY(), other.getWidth(), other.getHeight());
         return myBounds.intersects(himBounds);
     }
 
     public abstract void collidedWith(Entity other);
 
     public boolean closeBy(Entity other){
-        myBounds.setBounds((int)x - 50, (int)y - 50, sprite.getWidth() + 100, sprite.getHeight() + 100);
-        himBounds.setBounds((int)other.getX() -50, (int)other.getY() - 50, other.sprite.getWidth() + 100, other.sprite.getHeight() + 100);
+        myBounds.setBounds((int)x - 50, (int)y - 50, getWidth() + 100, getHeight() + 100);
+        himBounds.setBounds((int)other.getX() -50, (int)other.getY() - 50, other.getWidth() + 100, other.getHeight() + 100);
         return myBounds.intersects(himBounds);
     }
 

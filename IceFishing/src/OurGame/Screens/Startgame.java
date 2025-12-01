@@ -14,9 +14,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
     private final Image backgroundImage;
     private final Image iceLayer;
-    private final Image penguinImage;
     private final Image fishBoxImage;
-    private final Image wormCanImage;
 
     private Hook hook;
     
@@ -37,15 +35,14 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
     // Hook position
     private int mouseY = 0;
-    private int hookX = 960;
+    private int hookX = 760;
     private int hookY = 190;
     private final int hookMinY = 190;
     private final int hookMaxY = 845;
 
     // UI clickable areas - AJUSTADAS para as posições das imagens
     private Rectangle fishBoxArea = new Rectangle(290, 100, 280, 140);
-    private Rectangle wormCanArea = new Rectangle(1200, 160, 50, 90);
-    private Rectangle closeButtonArea = new Rectangle(1450, 20, 65, 65);
+    private Rectangle wormCanArea = new Rectangle(1155, 150, 55, 100);
 
     private Timer gameTimer;
     private Random random = new Random();
@@ -60,10 +57,8 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
         // Load images
         backgroundImage = new ImageIcon(getClass().getResource("/SpritesHD/Ocean_HD.png")).getImage();
-        iceLayer = new ImageIcon(getClass().getResource("/SpritesHD/Ice_HD.png")).getImage();
-        penguinImage = new ImageIcon(getClass().getResource("/SpritesHD/fishing_penguin.png")).getImage();
+        iceLayer = new ImageIcon(getClass().getResource("/assets/sprites/background/background_ice.png")).getImage();
         fishBoxImage = new ImageIcon(getClass().getResource("/SpritesHD/Box_0.png")).getImage();
-        wormCanImage = new ImageIcon(getClass().getResource("/SpritesHD/can_HD.png")).getImage();
 
         setLayout(null);
         setFocusable(true);
@@ -126,7 +121,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         long delta = 16;
         
         // Update hook position - CORRIGIDO
-        hook.y = hookY;
+        hook.setY(hookY);
         
         // Move all entities
         for (Entity entity : entities) {
@@ -158,12 +153,12 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private void spawnRandomEntity() {
         int type = random.nextInt(100);
         int startX = random.nextBoolean() ? -100 : 1920;
-        int startY = 200 + random.nextInt(600);
+        int startY = 280 + random.nextInt(600);
         double speed = 50 + random.nextInt(100);
         
         Entity newEntity = null;
         
-        if (type < 30) {
+        if (type < 16) {
             newEntity = new GrayFish(this, "/SpritesHD/GreyFish-0_HD.png", startX, startY);
         } else if (type < 50) {
             newEntity = new GoldenFish(this, "/SpritesHD/GoldFish-0_HD.png", startX, startY);
@@ -331,14 +326,14 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         g.setColor(new Color(80, 60, 40)); // Cor marrom da linha
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(4));
-        g2d.drawLine(960, 190, hookX, hookY);
+        g2d.drawLine(767, 170, 767, hookY);
         
         // DESENHAR ENTIDADES (peixes, anzol, etc)
         for (Entity entity : entities) {
             // Se for peixe fisgado, acompanha o anzol
             if (entity == hookedFish && entity != null) {
-                entity.x = hookX - entity.sprite.getWidth() / 2;
-                entity.y = hookY + 30;
+                entity.setX(hookX - entity.getWidth() / 2);
+                entity.setY(hookY + 30);
             }
             entity.draw(g);
         }
@@ -346,14 +341,8 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // Ice layer (sobrepõe a linha acima do gelo)
         g.drawImage(iceLayer, 0, 0, getWidth(), getHeight(), this);
 
-        // Penguin
-        g.drawImage(penguinImage, 748, 0, 410, 255, this);
-
         // Fish Box
         g.drawImage(fishBoxImage, 290, 100, 280, 140, this);
-
-        // Worm Can
-        g.drawImage(wormCanImage, 1200, 160, 50, 90, this);
         
         // DESENHAR UI (textos e informações)
         drawUI(g);
@@ -361,7 +350,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
     private void drawUI(Graphics g) {
         g.setFont(new Font("Arial", Font.BOLD, 28));
-        g.setColor(Color.WHITE);
+        g.setColor(Color.BLACK);
         
         // Contadores (canto superior esquerdo)
         g.drawString("🪱 Minhocas: " + remainingWorms, 30, 50);
@@ -371,37 +360,37 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // Isca atual
         String baitIcon = currentBait == BaitType.WORM ? "🪱" : "🐟";
         String baitText = currentBait == BaitType.WORM ? "Minhoca" : "Peixe Dourado";
-        g.setColor(Color.YELLOW);
+        g.setColor(Color.BLACK);
         g.drawString("Isca: " + baitIcon + " " + baitText, 30, 170);
         
         // Labels das áreas clicáveis
         g.setFont(new Font("Arial", Font.BOLD, 16));
-        g.setColor(Color.WHITE);
+        g.setColor(Color.BLACK);
         
         // Label da caixa de peixes
         if (hookY <= hookMinY + 20) {
-            g.setColor(Color.YELLOW);
-            g.drawString("← Clique para usar Peixe Dourado", 
-                fishBoxArea.x + fishBoxArea.width + 10, 
-                fishBoxArea.y + 70);
+            g.setColor(Color.BLACK);
+            g.drawString("↓ Clique para usar Peixe Dourado", 
+                fishBoxArea.x + 20, 
+                fishBoxArea.y -20);
         }
         
         // Label da lata de minhocas
         if (hookY <= hookMinY + 20) {
-            g.setColor(Color.YELLOW);
-            g.drawString("← Clique para usar Minhoca", 
-                wormCanArea.x - 220, 
-                wormCanArea.y + 50);
+            g.setColor(Color.BLACK);
+            g.drawString("↓ Clique para usar Minhoca", 
+                wormCanArea.x + 20, 
+                wormCanArea.y - 30);
         }
         
         // Timer
         long currentElapsed = (System.currentTimeMillis() - startTime) / 1000;
-        g.setColor(Color.WHITE);
+        g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 24));
         g.drawString("⏱️ Tempo: " + currentElapsed + "s", getWidth() - 200, 50);
         
         // Debug info (pode remover depois)
         g.setFont(new Font("Arial", Font.PLAIN, 14));
-        g.drawString("Hook Y: " + hookY + " | Entities: " + entities.size(), 30, getHeight() - 20);
+        g.drawString("Hook Y: " + hookY + " Hook X: " + hookX + " | Entities: " + entities.size(), 30, getHeight() - 20);
     }
 }
