@@ -11,6 +11,9 @@ public class GoldenFish extends Entity {
     public GoldenFish(Startgame game, String fileName, int x, double y) {
         super(fileName, x, y);
         this.game = game;
+        // try to load a second frame (replace -0 with -1) if exists
+        String alt = fileName.contains("-0") ? fileName.replace("-0", "-1") : fileName.replace("_0", "_1");
+        setFrames(new String[]{fileName, alt}, 250);
     }
     
     @Override

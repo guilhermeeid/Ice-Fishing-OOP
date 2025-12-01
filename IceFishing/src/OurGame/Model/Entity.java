@@ -1,6 +1,9 @@
 package OurGame.Model;
 
  import java.awt.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Entity {
     protected double x;     
@@ -9,6 +12,12 @@ public abstract class Entity {
     protected double dx;    // speed in x direction
     protected double dy;    // speed in y direction
     public String fileName;
+
+    // Animation frames (optional)
+    protected Sprite[] frames = null;
+    protected int frameIndex = 0;
+    protected long lastFrameChange = 0;
+    protected long frameDelay = 200; // ms
 
     private Rectangle myBounds = new Rectangle();
     private Rectangle himBounds = new Rectangle();
@@ -20,6 +29,41 @@ public abstract class Entity {
         this.y = y;
         this.fileName = fileName;
         sprite = (SpriteStorage.get().getSprite(fileName));
+    }
+
+    public void setFrames(String[] refs, long delayMs) {
+        try {
+            List<Sprite> list = new ArrayList<>();
+            for (String r : refs) {
+                URL u = this.getClass().getResource(r);
+                if (u != null) {
+                    list.add(SpriteStorage.get().getSprite(r));
+                }
+            }
+            if (!list.isEmpty()) {
+                frames = list.toArray(new Sprite[0]);
+                frameIndex = 0;
+                frameDelay = delayMs;
+                lastFrameChange = System.currentTimeMillis();
+            }
+        } catch (Exception ex) {
+            // Ignore if frames can't be loaded
+        }
+    }
+
+    public int getFrameCount() {
+        return frames == null ? 0 : frames.length;
+    }
+
+    public void setFrameIndex(int idx) {
+        if (frames != null && idx >= 0 && idx < frames.length) {
+            frameIndex = idx;
+        }
+    }
+
+    protected Sprite currentSprite() {
+        if (frames != null && frames.length > 0) return frames[frameIndex];
+        return sprite;
     }
 
     public void changeSprite(String x) {
@@ -66,21 +110,29 @@ public abstract class Entity {
 
     // Retorna largura/altura escaladas (usadas para desenho e colisões)
     public int getWidth() {
-        return (int) (sprite.getWidth() * SCALE);
+        return (int) (currentSprite().getWidth() * SCALE);
     }
 
     public int getHeight() {
-        return (int) (sprite.getHeight() * SCALE);
+        return (int) (currentSprite().getHeight() * SCALE);
     }
 
     public void draw(Graphics g){
         int w = getWidth();
         int h = getHeight();
         boolean flip = getHorizontalMovement() < 0;
-        sprite.draw(g, (int)x, (int)y, w, h, flip);
+        currentSprite().draw(g, (int)x, (int)y, w, h, flip);
     }
 
-    public void ownLogic() {}
+    public void ownLogic() {
+        if (frames != null && frames.length > 1) {
+            long now = System.currentTimeMillis();
+            if (now - lastFrameChange >= frameDelay) {
+                frameIndex = (frameIndex + 1) % frames.length;
+                lastFrameChange = now;
+            }
+        }
+    }
 
     public boolean collidesWith(Entity other){
         myBounds.setBounds((int)x, (int)y, getWidth(), getHeight());

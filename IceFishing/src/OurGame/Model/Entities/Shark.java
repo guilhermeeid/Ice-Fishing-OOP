@@ -9,6 +9,9 @@ public class Shark extends Entity {
     public Shark(Startgame game, String fileName, int x, double y) {
         super(fileName, x, y);
         this.game = game;
+        // If multiple shark frames exist (e.g., mouth open), load them
+        String alt1 = fileName.replace(".png", "_open.png");
+        setFrames(new String[]{fileName, alt1}, 120);
     }
     
     @Override
@@ -19,5 +22,13 @@ public class Shark extends Entity {
     @Override
     public void closeByed(Entity other) {
         // Shark opens mouth when close to bait
+    }
+
+    public void openMouth() {
+        if (getFrameCount() > 1) setFrameIndex(1);
+    }
+
+    public void closeMouth() {
+        if (getFrameCount() > 0) setFrameIndex(0);
     }
 }

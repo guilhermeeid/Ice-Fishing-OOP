@@ -128,6 +128,14 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             entity.move(delta);
             entity.ownLogic();
         }
+
+        // Shark proximity: open mouth when close to hook
+        for (Entity entity : entities) {
+            if (entity instanceof OurGame.Model.Entities.Shark) {
+                OurGame.Model.Entities.Shark s = (OurGame.Model.Entities.Shark) entity;
+                if (s.closeBy(hook)) s.openMouth(); else s.closeMouth();
+            }
+        }
         
         // Check collisions
         checkCollisions();
@@ -198,16 +206,39 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         if (entity instanceof GrayFish || entity instanceof GoldenFish) {
             if (currentBait == BaitType.WORM && hookedFish == null) {
                 hookedFish = entity;
+                // mark for removal so it won't be drawn twice (removed after collision loop)
+                removeEnt.add(entity);
                 entity.setHorizontalMovement(0);
                 entity.setVerticalMovement(0);
+                // update hook sprite according to bait and fish type
+                if (hook != null) {
+                    if (currentBait == BaitType.WORM) {
+                        hook.setHookSprite("/SpritesHD/warm_hooked.png");
+
+                    } else {
+                        if (entity instanceof OurGame.Model.Entities.GoldenFish) {
+                            hook.setHookSprite("/SpritesHD/yellow_hooked.png");
+                        } else if (entity instanceof OurGame.Model.Entities.GrayFish) {
+                            hook.setHookSprite("/SpritesHD/grey_hooked.png");
+                        } else {
+                            hook.setHookSprite("/SpritesHD/warm_hooked.png");
+                        }
+                    }
+                }
             }
         } else if (entity instanceof MulletFish) {
             if (currentBait == BaitType.GOLDEN_FISH && hookedFish == null) {
                 hookedFish = entity;
+                // mark for removal so it won't be drawn twice (removed after collision loop)
+                removeEnt.add(entity);
                 entity.setHorizontalMovement(0);
                 entity.setVerticalMovement(0);
                 caughtGoldenFish--;
                 currentBait = BaitType.WORM;
+                if (hook != null) {
+                    // use grey hooked for mullet (fallback)
+                    hook.setHookSprite("/SpritesHD/grey_hooked.png");
+                }
             }
         } else if (entity instanceof Shark || entity instanceof JellyFish) {
             if (currentBait == BaitType.WORM) {
@@ -217,8 +248,10 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
                 currentBait = BaitType.WORM;
             }
             if (hookedFish != null) {
+                // ensure hooked fish is removed (it may have been removed from entities earlier)
                 removeEnt.add(hookedFish);
                 hookedFish = null;
+                if (hook != null) hook.resetSprite();
             }
             removeEnt.add(entity);
         } else if (entity instanceof MetalCan) {
@@ -227,6 +260,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             if (hookedFish != null) {
                 removeEnt.add(hookedFish);
                 hookedFish = null;
+                if (hook != null) hook.resetSprite();
             }
             removeEnt.add(entity);
         }
@@ -244,6 +278,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             }
             removeEnt.add(hookedFish);
             hookedFish = null;
+            if (hook != null) hook.resetSprite();
         }
     }
 
@@ -330,12 +365,14 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         
         // DESENHAR ENTIDADES (peixes, anzol, etc)
         for (Entity entity : entities) {
-            // Se for peixe fisgado, acompanha o anzol
-            if (entity == hookedFish && entity != null) {
-                entity.setX(hookX - entity.getWidth() / 2);
-                entity.setY(hookY + 30);
-            }
             entity.draw(g);
+        }
+
+        // Desenhar peixe fisgado separadamente (foi removido de `entities` ao ser fisgado)
+        if (hookedFish != null) {
+            hookedFish.setX(hookX - hookedFish.getWidth() / 2);
+            hookedFish.setY(hookY + 30);
+            hookedFish.draw(g);
         }
         
         // Ice layer (sobrepõe a linha acima do gelo)
