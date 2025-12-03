@@ -9,6 +9,9 @@ public class GameTest extends JFrame {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private Homepage homepage;
+    private Instructions instructions;
+    private Startgame startgame;
 
     public GameTest() {
         setTitle("Ice Fishing");
@@ -20,9 +23,9 @@ public class GameTest extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        Homepage homepage = new Homepage(this);
-        Instructions instructions = new Instructions(this);
-        Startgame startgame = new Startgame(this);
+        homepage = new Homepage(this);
+        instructions = new Instructions(this);
+        startgame = new Startgame(this);
 
         mainPanel.add(homepage, "Homepage");
         mainPanel.add(instructions, "Instructions");
@@ -31,6 +34,10 @@ public class GameTest extends JFrame {
 
         add(mainPanel);
         setVisible(true);
+    }
+
+    public void startGame() {
+        if (startgame != null) startgame.startGame();
     }
 
     

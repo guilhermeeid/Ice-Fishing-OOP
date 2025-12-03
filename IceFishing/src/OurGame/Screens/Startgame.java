@@ -2,6 +2,7 @@ package OurGame.Screens;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -15,6 +16,11 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private final Image backgroundImage;
     private final Image iceLayer;
     private final Image fishBoxImage;
+    private final Image shockedPenguin;
+    private boolean showShocked = false;
+    private long shockedStartTime = 0L;
+    private static final long SHOCKED_DURATION = 1000L; // ms
+    private static final double PENGUIN_SCALE = 1.0 / 2.5;
 
     private Hook hook;
     
@@ -35,7 +41,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
     // Hook position
     private int mouseY = 0;
-    private int hookX = 760;
+    private final int hookX = 760;
     private int hookY = 190;
     private final int hookMinY = 190;
     private final int hookMaxY = 845;
@@ -59,6 +65,11 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         backgroundImage = new ImageIcon(getClass().getResource("/SpritesHD/Ocean_HD.png")).getImage();
         iceLayer = new ImageIcon(getClass().getResource("/assets/sprites/background/background_ice.png")).getImage();
         fishBoxImage = new ImageIcon(getClass().getResource("/SpritesHD/Box_0.png")).getImage();
+        Image tmp = null;
+        URL shockedUrl = getClass().getResource("/assets/sprites/player/penguin_fishing_shocked.png");
+        if (shockedUrl != null) tmp = new ImageIcon(shockedUrl).getImage();
+        else System.err.println("Shocked penguin image not found: /assets/sprites/player/penguin_fishing_shocked.png");
+        shockedPenguin = tmp;
 
         setLayout(null);
         setFocusable(true);
@@ -82,10 +93,9 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         addMouseMotionListener(this);
         addMouseListener(this);
 
-        startGame();
     }
 
-    private void startGame() {
+    public void startGame() {
         entities.clear();
         removeEnt.clear();
         
@@ -133,8 +143,18 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         for (Entity entity : entities) {
             if (entity instanceof OurGame.Model.Entities.Shark) {
                 OurGame.Model.Entities.Shark s = (OurGame.Model.Entities.Shark) entity;
-                if (s.closeBy(hook)) s.openMouth(); else s.closeMouth();
+                boolean open = false;
+                // Shark opens mouth only if there is a hooked fish and the shark is near that hooked fish
+                if (hookedFish != null) {
+                    if (s.closeBy(hookedFish)) open = true;
+                }
+                if (open) s.openMouth(); else s.closeMouth();
             }
+        }
+
+        // Hide shocked penguin after duration
+        if (showShocked && (currentTime - shockedStartTime) > SHOCKED_DURATION) {
+            showShocked = false;
         }
         
         // Check collisions
@@ -150,8 +170,8 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             lastSpawnTime = currentTime;
         }
         
-        // Check game over conditions
-        if (remainingWorms <= 0 && currentBait == BaitType.WORM && hookedFish == null) {
+        // Check game over conditions (delay game over while shocked penguin is visible)
+        if (remainingWorms <= 0 && currentBait == BaitType.WORM && hookedFish == null && !showShocked) {
             gameRunning = false;
         }
         
@@ -191,9 +211,31 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private void checkCollisions() {
         for (Entity entity : entities) {
             if (entity == hook) continue;
-            
-            if (hook.collidesWith(entity)) {
-                handleCollision(entity);
+            // Special case: MetalCan should collide with the fishing line (vertical segment above the hook)
+            if (entity instanceof MetalCan) {
+                int lineX = 767; // x coordinate of the drawn fishing line
+                int lineTop = 170; // top y of the drawn line
+                int lineBottom = hookY; // current hook y
+                int tol = 18; // thickness tolerance for collision
+                Rectangle lineRect = new Rectangle(lineX - tol, lineTop, tol * 2, Math.max(1, lineBottom - lineTop));
+                Rectangle entRect = new Rectangle(entity.getX(), entity.getY(), entity.getWidth(), entity.getHeight());
+                if (lineRect.intersects(entRect)) {
+                    handleCollision(entity);
+                    continue;
+                }
+            }
+
+            // Sharks only interact with the hook if there's a hooked fish
+            if (entity instanceof OurGame.Model.Entities.Shark) {
+                if (hookedFish != null) {
+                    if (hook.collidesWith(entity)) {
+                        handleCollision(entity);
+                    }
+                }
+            } else {
+                if (hook.collidesWith(entity)) {
+                    handleCollision(entity);
+                }
             }
             
             if (entity.getX() < -200 || entity.getX() > 2100) {
@@ -233,14 +275,23 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
                 removeEnt.add(entity);
                 entity.setHorizontalMovement(0);
                 entity.setVerticalMovement(0);
-                caughtGoldenFish--;
+                // bait was already consumed when equipped (clicked in fish box),
+                // do not decrement again here to avoid negative counts.
                 currentBait = BaitType.WORM;
                 if (hook != null) {
                     // use grey hooked for mullet (fallback)
                     hook.setHookSprite("/SpritesHD/grey_hooked.png");
                 }
             }
-        } else if (entity instanceof Shark || entity instanceof JellyFish) {
+        } else if (entity instanceof JellyFish) {
+            // JellyFish behavior: affect the player only once per jellyfish
+            // Use the entity's interaction guard to prevent repeated effects
+            if (!entity.consumeInteractionOnce()) {
+                // already consumed by a previous collision, ignore
+                return;
+            }
+            showShocked = true;
+            shockedStartTime = System.currentTimeMillis();
             if (currentBait == BaitType.WORM) {
                 remainingWorms--;
             } else {
@@ -248,12 +299,25 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
                 currentBait = BaitType.WORM;
             }
             if (hookedFish != null) {
-                // ensure hooked fish is removed (it may have been removed from entities earlier)
                 removeEnt.add(hookedFish);
                 hookedFish = null;
                 if (hook != null) hook.resetSprite();
             }
-            removeEnt.add(entity);
+            // Do NOT remove the JellyFish; let it continue swimming (like Shark)
+        } else if (entity instanceof Shark) {
+            // Shark should only interact when there is a hookedFish (handled by checkCollisions);
+            // when it eats a fish, remove only the fish (not the shark) and reset hook sprite.
+            if (currentBait == BaitType.WORM) {
+                remainingWorms--;
+            } else {
+                caughtGoldenFish--;
+                currentBait = BaitType.WORM;
+            }
+            if (hookedFish != null) {
+                removeEnt.add(hookedFish);
+                hookedFish = null;
+                if (hook != null) hook.resetSprite();
+            }
         } else if (entity instanceof MetalCan) {
             gameRunning = false;
         } else if (entity instanceof Boot) {
@@ -262,7 +326,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
                 hookedFish = null;
                 if (hook != null) hook.resetSprite();
             }
-            removeEnt.add(entity);
+            // Do NOT remove the Boot on interaction; let it continue swimming
         }
     }
 
@@ -383,6 +447,18 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         
         // DESENHAR UI (textos e informações)
         drawUI(g);
+
+        // Show shocked penguin overlay (centered) for a short duration
+        if (showShocked && shockedPenguin != null) {
+            int iw = shockedPenguin.getWidth(this);
+            int ih = shockedPenguin.getHeight(this);
+            if (iw <= 0 || ih <= 0) { iw = 300; ih = 300; }
+            int scaledW = (int) (iw * PENGUIN_SCALE);
+            int scaledH = (int) (ih * PENGUIN_SCALE);
+            if (scaledW <= 0) scaledW = 100;
+            if (scaledH <= 0) scaledH = 100;
+            g.drawImage(shockedPenguin, 748, 2, scaledW, scaledH, this);
+        }
     }
 
     private void drawUI(Graphics g) {

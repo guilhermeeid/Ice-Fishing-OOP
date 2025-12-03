@@ -18,6 +18,8 @@ public abstract class Entity {
     protected int frameIndex = 0;
     protected long lastFrameChange = 0;
     protected long frameDelay = 200; // ms
+    // Interaction guard: allow certain interactions only once per-entity
+    private boolean interactionConsumed = false;
 
     private Rectangle myBounds = new Rectangle();
     private Rectangle himBounds = new Rectangle();
@@ -53,6 +55,16 @@ public abstract class Entity {
 
     public int getFrameCount() {
         return frames == null ? 0 : frames.length;
+    }
+
+    /**
+     * Consume an interaction for this entity one time. Returns true if this
+     * is the first time (interaction allowed) or false if it was already consumed.
+     */
+    public boolean consumeInteractionOnce() {
+        if (interactionConsumed) return false;
+        interactionConsumed = true;
+        return true;
     }
 
     public void setFrameIndex(int idx) {
@@ -136,8 +148,16 @@ public abstract class Entity {
 
     public boolean collidesWith(Entity other){
         myBounds.setBounds((int)x, (int)y, getWidth(), getHeight());
-        himBounds.setBounds((int)other.getX(), (int)other.getY(), other.getWidth(), other.getHeight());
-        return myBounds.intersects(himBounds);
+        Rectangle otherBounds = other.getCollisionBounds();
+        return myBounds.intersects(otherBounds);
+    }
+
+    /**
+     * Returns the collision bounds for this entity. Subclasses may override
+     * to provide a smaller or shifted hitbox (e.g. shark mouth).
+     */
+    public Rectangle getCollisionBounds() {
+        return new Rectangle((int)x, (int)y, getWidth(), getHeight());
     }
 
     public abstract void collidedWith(Entity other);

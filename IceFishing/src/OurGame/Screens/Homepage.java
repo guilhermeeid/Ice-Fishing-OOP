@@ -25,6 +25,7 @@ public class Homepage extends JPanel {
 
         startButton.addActionListener((ActionEvent e) -> {
             frame.showScreen("Startgame");
+            frame.startGame();
         });
 
         JButton instructionsButton = new JButton("");
