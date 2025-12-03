@@ -1,26 +1,24 @@
 package OurGame.Screens;
 
-import javax.swing.*;
+import OurGame.GameTest;
+import OurGame.Model.Entities.*;
+import OurGame.Model.Entity;
 import java.awt.*;
-import java.net.URL;
 import java.awt.event.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
-
-import OurGame.GameTest;
-import OurGame.Model.Entity;
-import OurGame.Model.Entities.*;
+import javax.swing.*;
 
 public class Startgame extends JPanel implements MouseMotionListener, MouseListener {
 
     private final Image backgroundImage;
     private final Image iceLayer;
     private final Image fishBoxImage;
-    private final Image shockedPenguin;
+    private final Image shockedOverlay;
     private boolean showShocked = false;
     private long shockedStartTime = 0L;
     private static final long SHOCKED_DURATION = 1000L; // ms
-    private static final double PENGUIN_SCALE = 1.0 / 2.5;
 
     private Hook hook;
     
@@ -58,18 +56,31 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private GameTest frame;
     private JButton closeToHomeButton;
 
+    // Fonte customizada Jersey 10
+    private Font jerseyFont;
+
     public Startgame(GameTest frame) {
         this.frame = frame;
+
+        // Carregar fonte customizada
+        loadCustomFont();
 
         // Load images
         backgroundImage = new ImageIcon(getClass().getResource("/SpritesHD/Ocean_HD.png")).getImage();
         iceLayer = new ImageIcon(getClass().getResource("/assets/sprites/background/background_ice.png")).getImage();
         fishBoxImage = new ImageIcon(getClass().getResource("/SpritesHD/Box_0.png")).getImage();
+        
+        // Tentar carregar a imagem shocked - se não existir, usar a mesma iceLayer
         Image tmp = null;
-        URL shockedUrl = getClass().getResource("/assets/sprites/player/penguin_fishing_shocked.png");
-        if (shockedUrl != null) tmp = new ImageIcon(shockedUrl).getImage();
-        else System.err.println("Shocked penguin image not found: /assets/sprites/player/penguin_fishing_shocked.png");
-        shockedPenguin = tmp;
+        URL shockedUrl = getClass().getResource("/assets/sprites/background/background_ice_shocked.png");
+        if (shockedUrl != null) {
+            tmp = new ImageIcon(shockedUrl).getImage();
+            System.out.println("Shocked overlay loaded: background_ice_shocked.png");
+        } else {
+            System.err.println("Shocked overlay not found, using normal ice layer");
+            tmp = iceLayer; // Fallback para a camada normal
+        }
+        shockedOverlay = tmp;
 
         setLayout(null);
         setFocusable(true);
@@ -92,7 +103,26 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         add(closeToHomeButton);
         addMouseMotionListener(this);
         addMouseListener(this);
+    }
 
+    private void loadCustomFont() {
+        try {
+            Font baseFont = Font.createFont(Font.TRUETYPE_FONT, 
+                getClass().getResourceAsStream("/assets/fonts/Jersey10-Regular.ttf"));
+            jerseyFont = baseFont.deriveFont(Font.BOLD, 28f);
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar fonte Jersey 10: " + e.getMessage());
+            e.printStackTrace();
+            // Fallback para Arial
+            jerseyFont = new Font("Arial", Font.BOLD, 28);
+        }
+    }
+
+    private Font getJerseyFont(float size, int style) {
+        if (jerseyFont != null) {
+            return jerseyFont.deriveFont(style, size);
+        }
+        return new Font("Arial", style, (int)size);
     }
 
     public void startGame() {
@@ -442,42 +472,35 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // Ice layer (sobrepõe a linha acima do gelo)
         g.drawImage(iceLayer, 0, 0, getWidth(), getHeight(), this);
 
+        // Show shocked overlay (same size as iceLayer) for a short duration
+        // Deve ficar ANTES da Fish Box e da UI para não tampá-los
+        if (showShocked && shockedOverlay != null) {
+            g.drawImage(shockedOverlay, 0, 0, getWidth(), getHeight(), this);
+        }
+
         // Fish Box
         g.drawImage(fishBoxImage, 290, 100, 280, 140, this);
         
         // DESENHAR UI (textos e informações)
         drawUI(g);
-
-        // Show shocked penguin overlay (centered) for a short duration
-        if (showShocked && shockedPenguin != null) {
-            int iw = shockedPenguin.getWidth(this);
-            int ih = shockedPenguin.getHeight(this);
-            if (iw <= 0 || ih <= 0) { iw = 300; ih = 300; }
-            int scaledW = (int) (iw * PENGUIN_SCALE);
-            int scaledH = (int) (ih * PENGUIN_SCALE);
-            if (scaledW <= 0) scaledW = 100;
-            if (scaledH <= 0) scaledH = 100;
-            g.drawImage(shockedPenguin, 748, 2, scaledW, scaledH, this);
-        }
     }
 
     private void drawUI(Graphics g) {
-        g.setFont(new Font("Arial", Font.BOLD, 28));
+        g.setFont(getJerseyFont(28f, Font.BOLD));
         g.setColor(Color.BLACK);
         
         // Contadores (canto superior esquerdo)
-        g.drawString("🪱 Minhocas: " + remainingWorms, 30, 50);
-        g.drawString("🎣 Pescados: " + score, 30, 90);
-        g.drawString("🐟 Dourados: " + caughtGoldenFish, 30, 130);
+        g.drawString("Minhocas: " + remainingWorms, 30, 50);
+        g.drawString("Pescados: " + score, 30, 90);
+        g.drawString("Dourados: " + caughtGoldenFish, 30, 130);
         
         // Isca atual
-        String baitIcon = currentBait == BaitType.WORM ? "🪱" : "🐟";
         String baitText = currentBait == BaitType.WORM ? "Minhoca" : "Peixe Dourado";
         g.setColor(Color.BLACK);
-        g.drawString("Isca: " + baitIcon + " " + baitText, 30, 170);
+        g.drawString("Isca:" + baitText, 30, 170);
         
         // Labels das áreas clicáveis
-        g.setFont(new Font("Arial", Font.BOLD, 16));
+        g.setFont(getJerseyFont(16f, Font.BOLD));
         g.setColor(Color.BLACK);
         
         // Label da caixa de peixes
@@ -485,7 +508,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             g.setColor(Color.BLACK);
             g.drawString("↓ Clique para usar Peixe Dourado", 
                 fishBoxArea.x + 20, 
-                fishBoxArea.y -20);
+                fishBoxArea.y - 20);
         }
         
         // Label da lata de minhocas
@@ -499,11 +522,11 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // Timer
         long currentElapsed = (System.currentTimeMillis() - startTime) / 1000;
         g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.BOLD, 24));
-        g.drawString("⏱️ Tempo: " + currentElapsed + "s", getWidth() - 200, 50);
+        g.setFont(getJerseyFont(24f, Font.BOLD));
+        g.drawString("Tempo: " + currentElapsed + "s", getWidth() - 200, 50);
         
         // Debug info (pode remover depois)
-        g.setFont(new Font("Arial", Font.PLAIN, 14));
+        g.setFont(getJerseyFont(14f, Font.PLAIN));
         g.drawString("Hook Y: " + hookY + " Hook X: " + hookX + " | Entities: " + entities.size(), 30, getHeight() - 20);
     }
 }
