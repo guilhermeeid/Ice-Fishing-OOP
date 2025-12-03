@@ -212,7 +212,8 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         int type = random.nextInt(100);
         int startX = random.nextBoolean() ? -100 : 1920;
         int startY = 280 + random.nextInt(600);
-        double speed = 50 + random.nextInt(100);
+        // base minimum speed increased by 50% (was 50 -> now 75)
+        double speed = 75 + random.nextInt(100);
         
         Entity newEntity = null;
         
