@@ -5,17 +5,22 @@ import OurGame.Screens.Startgame;
 
 public class GrayFish extends Entity {
     private Startgame game;
+    
+    private static final long ANIMATION_SPEED = 250;
+    private static final double BASE_SPEED = 75;
 
     public GrayFish(Startgame game, String fileName, int x, double y) {
         super(fileName, x, y);
         this.game = game;
-        String alt = fileName.contains("-0") ? fileName.replace("-0", "-1") : fileName.replace("_0", "_1");
-        setFrames(new String[]{fileName, alt}, 250);
+        setFramesAuto(fileName, ANIMATION_SPEED);
+    }
+    
+    public static double getBaseSpeed() {
+        return BASE_SPEED;
     }
     
     @Override
     public void collidedWith(Entity other) {
         // Handled in Startgame
     }
-    
 }

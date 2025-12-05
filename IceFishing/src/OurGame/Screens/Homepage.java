@@ -11,7 +11,7 @@ public class Homepage extends JPanel {
 
     public Homepage(GameTest frame) {
 
-        background = new ImageIcon(getClass().getResource("/SpritesHD/Start Screen.png")).getImage();
+        background = new ImageIcon(getClass().getResource("/assets/sprites/ui/start_screen.png")).getImage();
 
         setLayout(null);
 
