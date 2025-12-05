@@ -51,9 +51,9 @@
 * Can only be caught **using a Golden Fish as bait**.
 * To equip a Golden Fish as bait:
 
-  1. Reel the line back to the surface.
-  2. Click the fish box.
-  3. One caught Golden Fish is moved to the hook, replacing the worm.
+1. Reel the line back to the surface.
+2. Click the fish box.
+3. One caught Golden Fish is moved to the hook, replacing the worm.
 * If the player clicks the worm can while a Golden Fish is unused on the hook, it returns to the fish box and the worm becomes the current bait again.
 * After successfully catching a Mullet Fish:
 
@@ -126,33 +126,40 @@ At the end of the game:
 ## 📁 Project Structure
 
 ```
-/src
-  /entities
-    Fish.java
-    GoldenFish.java
-    GreyFish.java
-    BigFish.java
-    ...
-  /items
-    Bait.java
-    Worm.java
-    GoldenFishBait.java
-  /hazards
-    Shark.java
-    Jellyfish.java
-    Boot.java
-    MetalCan.java
-  /ui
-    MainMenu.java
-    InstructionsScreen.java
-  /game
-    Game.java
-    Hook.java
-    Line.java
-Main.java
-
-/assets
-  (images, sprites, instructions)
+src/
+│
+├── assets/
+│   │
+│   ├── fonts/
+│   │   ├── Jersey10-Regular.ttf
+│   │   └── License.txt
+│   │
+│   ├── sprites/
+│   │   ├── background/
+│   │   ├── fish/
+│   │   ├── hazards/
+│   │   ├── obstacles/
+│   │   ├── player/
+│   │   └── ui/
+│   │
+│   └── sound/
+│       ├── sfx/
+│       └── music/
+│
+├── game/
+│   │
+│   ├── core/
+|   |   ├── entities/
+│   │   ├── Entity.java
+│   │   ├── Sprite.java
+│   │   └── SpriteRegistry.java
+│   │
+│   ├── screens/
+│   │   ├── MainMenuScreen.java
+│   │   ├── InstructionsScreen.java
+│   │   └── GameStartScreen.java
+│   │
+│   └── Game.java
 ```
 ---
 
