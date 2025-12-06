@@ -24,6 +24,10 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private long shockedStartTime = 0L;
     private static final long SHOCKED_DURATION = 1000L; // ms
 
+    // Controle de cor da linha
+    private Color normalLineColor = new Color(80, 60, 40); // Cor padrão (cinza)
+    private Color shockedLineColor = new Color(0x5EC5FF); // Cor ao levar choque (azul elétrico)
+
     private Hook hook;
 
     private ArrayList<Entity> entities = new ArrayList<>();
@@ -51,7 +55,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private final int hookMaxY = 845;
 
     // UI clickable areas - AJUSTADAS para as posições das imagens
-    private Rectangle fishBoxArea = new Rectangle(290, 100, 280, 140);
+    private Rectangle fishBoxArea = new Rectangle(280, 130, 280, 140);
     private Rectangle wormCanArea = new Rectangle(1155, 150, 55, 100);
 
     private Timer gameTimer;
@@ -127,7 +131,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             }
         }
         
-        fishBoxArea = new Rectangle(290, 100, 280, 140);
+        fishBoxArea = new Rectangle(280, 130, 280, 140);
 
         // Tentar carregar a imagem shocked - se não existir, usar a mesma iceLayer
         Image tmp = null;
@@ -378,9 +382,9 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
                 if (hook != null) {
                     if (entity instanceof GoldenFish) {
-                        hook.setHookSprite("/assets/sprites/player/hook_gold_fish.png");
+                        hook.setHookSprite("/assets/sprites/player/hook_gold_fish.png", -15);
                     } else if (entity instanceof GrayFish) {
-                        hook.setHookSprite("/assets/sprites/player/hook_grey_fish.png");
+                        hook.setHookSprite("/assets/sprites/player/hook_grey_fish.png", -20);
                     }
                 }
             }
@@ -394,7 +398,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
                 if (hook != null) {
                     // Mullet fisgado - fazer sprite
-                    hook.setHookSprite("/assets/sprites/player/hook_gold_fish.png");
+                    hook.setHookSprite("/assets/sprites/player/hook_mullet_fish.png", -25);
                 }
             }
         } else if (entity instanceof JellyFish) {
@@ -503,7 +507,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
                 score--;
                 
                 if (hook != null) {
-                    hook.setHookSprite("/assets/sprites/player/hook_gold_fish.png");
+                    hook.setHookSprite("/assets/sprites/player/hook_gold_fish.png", -15);
                 }
             }
         }
@@ -567,7 +571,8 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
 
         // DESENHAR LINHA DE PESCA (do pinguim até o anzol)
-        g.setColor(new Color(80, 60, 40)); // Cor marrom da linha
+        Color currentLineColor = showShocked ? shockedLineColor : normalLineColor;
+        g.setColor(currentLineColor);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(4));
         g2d.drawLine(767, 170, 767, hookY);
@@ -575,13 +580,6 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // DESENHAR ENTIDADES (peixes, anzol, etc)
         for (Entity entity : entities) {
             entity.draw(g);
-        }
-
-        // Desenhar peixe fisgado separadamente (foi removido de `entities` ao ser fisgado)
-        if (hookedFish != null) {
-            hookedFish.setX(hookX - hookedFish.getWidth() / 2);
-            hookedFish.setY(hookY + 30);
-            hookedFish.draw(g);
         }
 
         // Ice layer (sobrepõe a linha acima do gelo)
@@ -602,8 +600,8 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // Use the original in-game destination size for all boxes (280x140)
         int destW = 280;
         int destH = 140;
-        int baseX = 290;
-        int baseY = 100;
+        int baseX = 280;
+        int baseY = 130;
         int drawY = baseY;
         if (idx > 0) {
             drawY = baseY - 40;
@@ -620,20 +618,14 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         g.setFont(getJerseyFont(80f, Font.PLAIN));
         g.setColor(new Color(0x6B686B));
 
-        g.drawString(remainingWorms + "X", 70, 105);
+        g.drawString(remainingWorms + "x", 70, 105);
 
         g.setFont(getJerseyFont(28f, Font.BOLD));
-        g.setColor(new Color(0x6B686B));
+        g.setColor(Color.BLACK);
 
         // Contadores (canto superior esquerdo)
         
-        g.drawString("Fished: " + score, 430, 180);
-        g.drawString("Golden: " + caughtGoldenFish, 430, 210);
-
-        // Isca atual
-        String baitText = currentBait == BaitType.WORM ? "Worm" : "Golden Fish";
-        g.setColor(Color.BLACK);
-        g.drawString("Bait: " + baitText, 30, 170);
+        g.drawString("Fish: " + score, 430, 225);
 
         // Labels das áreas clicáveis
         g.setFont(getJerseyFont(20f, Font.PLAIN));
@@ -641,28 +633,24 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
         // Label da caixa de peixes
         if (hookY <= hookMinY + 20) {
-            g.setColor(Color.BLACK);
+            g.setColor(new Color(0x6B686B));
             g.drawString("Click on the box below to use gold fish as bait.",
-                    fishBoxArea.x + 40,
-                    fishBoxArea.y - 20);
+                    fishBoxArea.x + -5,
+                    fishBoxArea.y - 45);
         }
 
         // Label da lata de minhocas
         if (hookY <= hookMinY + 20) {
-            g.setColor(Color.BLACK);
+            g.setColor(new Color(0x6B686B));
             g.drawString("Click on the metal can below to use worm as bait.",
-                    wormCanArea.x + 20,
-                    wormCanArea.y - 30);
+                    wormCanArea.x + -5,
+                    wormCanArea.y - 15);
         }
 
         // Timer
         long currentElapsed = (System.currentTimeMillis() - startTime) / 1000;
-        g.setColor(Color.BLACK);
+        g.setColor(new Color(0x6B686B));
         g.setFont(getJerseyFont(24f, Font.BOLD));
-        g.drawString("Time: " + currentElapsed + "s", getWidth() - 200, 50);
-
-        // Debug info (pode remover depois)
-        g.setFont(getJerseyFont(14f, Font.PLAIN));
-        g.drawString("Hook Y: " + hookY + " Hook X: " + hookX + " | Entities: " + entities.size(), 30, getHeight() - 20);
+        g.drawString("Time: " + currentElapsed + "s", getWidth() - 185, 68);
     }
 }
