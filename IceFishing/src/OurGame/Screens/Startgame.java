@@ -618,12 +618,12 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private void drawUI(Graphics g) {
 
         g.setFont(getJerseyFont(80f, Font.PLAIN));
-        g.setColor(Color.BLACK);
+        g.setColor(new Color(0x6B686B));
 
-        g.drawString("X" + remainingWorms, 70, 90);
+        g.drawString(remainingWorms + "X", 70, 105);
 
         g.setFont(getJerseyFont(28f, Font.BOLD));
-        g.setColor(Color.BLACK);
+        g.setColor(new Color(0x6B686B));
 
         // Contadores (canto superior esquerdo)
         
@@ -642,7 +642,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // Label da caixa de peixes
         if (hookY <= hookMinY + 20) {
             g.setColor(Color.BLACK);
-            g.drawString("↓ Click to use Golden Fish",
+            g.drawString("Click on the box below to use gold fish as bait.",
                     fishBoxArea.x + 40,
                     fishBoxArea.y - 20);
         }
@@ -650,7 +650,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // Label da lata de minhocas
         if (hookY <= hookMinY + 20) {
             g.setColor(Color.BLACK);
-            g.drawString("↓ Click to use Worm",
+            g.drawString("Click on the metal can below to use worm as bait.",
                     wormCanArea.x + 20,
                     wormCanArea.y - 30);
         }
