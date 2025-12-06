@@ -233,12 +233,17 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             if (entity instanceof OurGame.Model.Entities.Shark) {
                 OurGame.Model.Entities.Shark s = (OurGame.Model.Entities.Shark) entity;
                 boolean open = false;
-                // Shark opens mouth only if there is a hooked fish and the shark is near that hooked fish
+                // Shark opens mouth if near a hooked fish, or near the golden bait on the hook
                 if (hookedFish != null) {
                     if (s.closeBy(hookedFish)) {
                         open = true;
                     }
+                } else if (currentBait == BaitType.GOLDEN_FISH && hook != null) {
+                    if (s.closeBy(hook)) {
+                        open = true;
+                    }
                 }
+
                 if (open) {
                     s.openMouth();
                 } else {
@@ -276,7 +281,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private void spawnRandomEntity() {
         int type = random.nextInt(100);
         int startX = random.nextBoolean() ? -100 : 1920;
-        int startY = 280 + random.nextInt(600);
+        int startY = 280 + random.nextInt(475);
 
         Entity newEntity = null;
         double speed = 0;
@@ -344,8 +349,8 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             }
 
             // Sharks only interact with the hook if there's a hooked fish
-            if (entity instanceof OurGame.Model.Entities.Shark) {
-                if (hookedFish != null) {
+            if (entity instanceof Shark) {
+                if (currentBait == BaitType.GOLDEN_FISH) {
                     if (hook.collidesWith(entity)) {
                         handleCollision(entity);
                     }
@@ -364,21 +369,18 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
     private void handleCollision(Entity entity) {
         if (entity instanceof GrayFish || entity instanceof GoldenFish) {
+            // Gray fish e golden fish podem ser capturados APENAS com worm bait
             if (currentBait == BaitType.WORM && hookedFish == null) {
                 hookedFish = entity;
                 removeEnt.add(entity);
                 entity.setHorizontalMovement(0);
                 entity.setVerticalMovement(0);
 
-                // Atualizar sprite do anzol
                 if (hook != null) {
-                    if (currentBait == BaitType.WORM) {
-                        // Anzol com minhoca e peixe fisgado
-                        if (entity instanceof GoldenFish) {
-                            hook.setHookSprite("/assets/sprites/player/hook_gold_fish.png");
-                        } else if (entity instanceof GrayFish) {
-                            hook.setHookSprite("/assets/sprites/player/hook_grey_fish.png");
-                        }
+                    if (entity instanceof GoldenFish) {
+                        hook.setHookSprite("/assets/sprites/player/hook_gold_fish.png");
+                    } else if (entity instanceof GrayFish) {
+                        hook.setHookSprite("/assets/sprites/player/hook_grey_fish.png");
                     }
                 }
             }
@@ -405,8 +407,9 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             if (currentBait == BaitType.WORM) {
                 remainingWorms--;
             } else {
-                caughtGoldenFish--;
+                
                 currentBait = BaitType.WORM;
+                hook.resetSprite();
             }
 
             if (hookedFish != null) {
@@ -417,16 +420,21 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
                 }
             }
         } else if (entity instanceof Shark) {
-            if (currentBait == BaitType.WORM) {
-                remainingWorms--;
-            } else {
-                caughtGoldenFish--;
-                currentBait = BaitType.WORM;
-            }
-
+            
+            // Se há um peixe fisgado, remove ele
             if (hookedFish != null) {
                 removeEnt.add(hookedFish);
                 hookedFish = null;
+                if (hook != null) {
+                    hook.resetSprite();
+                }
+            }
+            
+            if (currentBait == BaitType.WORM) {
+                remainingWorms--;
+            } else if (currentBait == BaitType.GOLDEN_FISH) {
+        
+                currentBait = BaitType.WORM;
                 if (hook != null) {
                     hook.resetSprite();
                 }
@@ -492,6 +500,11 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             if (caughtGoldenFish > 0 && currentBait == BaitType.WORM && hookedFish == null) {
                 currentBait = BaitType.GOLDEN_FISH;
                 caughtGoldenFish--;
+                score--;
+                
+                if (hook != null) {
+                    hook.setHookSprite("/assets/sprites/player/hook_gold_fish.png");
+                }
             }
         }
 
@@ -499,7 +512,12 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         if (wormCanArea.contains(x, y) && hookY <= hookMinY + 20) {
             if (currentBait == BaitType.GOLDEN_FISH) {
                 caughtGoldenFish++;
+                score++;
                 currentBait = BaitType.WORM;
+                
+                if (hook != null) {
+                    hook.resetSprite();
+                }
             }
         }
     }
@@ -525,7 +543,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
         int result = JOptionPane.showConfirmDialog(
                 this,
-                "Fim de Jogo!\n\nPeixes Pescados: " + score + "\nTempo: " + elapsedTime + "s\n\nJogar novamente?",
+                "Game Over!\n\nCaught fish: " + score + "\nTime: " + elapsedTime + "s\n\nPlay again?",
                 "Game Over",
                 JOptionPane.YES_NO_OPTION
         );
@@ -598,35 +616,41 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     }
 
     private void drawUI(Graphics g) {
+
+        g.setFont(getJerseyFont(80f, Font.PLAIN));
+        g.setColor(Color.BLACK);
+
+        g.drawString("X" + remainingWorms, 70, 90);
+
         g.setFont(getJerseyFont(28f, Font.BOLD));
         g.setColor(Color.BLACK);
 
         // Contadores (canto superior esquerdo)
-        g.drawString("Minhocas: " + remainingWorms, 30, 50);
-        g.drawString("Pescados: " + score, 30, 90);
-        g.drawString("Dourados: " + caughtGoldenFish, 30, 130);
+        
+        g.drawString("Fished: " + score, 430, 180);
+        g.drawString("Golden: " + caughtGoldenFish, 430, 210);
 
         // Isca atual
-        String baitText = currentBait == BaitType.WORM ? "Minhoca" : "Peixe Dourado";
+        String baitText = currentBait == BaitType.WORM ? "Worm" : "Golden Fish";
         g.setColor(Color.BLACK);
-        g.drawString("Isca:" + baitText, 30, 170);
+        g.drawString("Bait: " + baitText, 30, 170);
 
         // Labels das áreas clicáveis
-        g.setFont(getJerseyFont(16f, Font.BOLD));
+        g.setFont(getJerseyFont(20f, Font.PLAIN));
         g.setColor(Color.BLACK);
 
         // Label da caixa de peixes
         if (hookY <= hookMinY + 20) {
             g.setColor(Color.BLACK);
-            g.drawString("↓ Clique para usar Peixe Dourado",
-                    fishBoxArea.x + 20,
+            g.drawString("↓ Click to use Golden Fish",
+                    fishBoxArea.x + 40,
                     fishBoxArea.y - 20);
         }
 
         // Label da lata de minhocas
         if (hookY <= hookMinY + 20) {
             g.setColor(Color.BLACK);
-            g.drawString("↓ Clique para usar Minhoca",
+            g.drawString("↓ Click to use Worm",
                     wormCanArea.x + 20,
                     wormCanArea.y - 30);
         }
@@ -635,7 +659,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         long currentElapsed = (System.currentTimeMillis() - startTime) / 1000;
         g.setColor(Color.BLACK);
         g.setFont(getJerseyFont(24f, Font.BOLD));
-        g.drawString("Tempo: " + currentElapsed + "s", getWidth() - 200, 50);
+        g.drawString("Time: " + currentElapsed + "s", getWidth() - 200, 50);
 
         // Debug info (pode remover depois)
         g.setFont(getJerseyFont(14f, Font.PLAIN));
