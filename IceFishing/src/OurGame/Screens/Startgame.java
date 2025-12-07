@@ -78,51 +78,50 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         backgroundImage = new ImageIcon(getClass().getResource("/assets/sprites/background/background_sea.png")).getImage();
         iceLayer = new ImageIcon(getClass().getResource("/assets/sprites/background/background_ice.png")).getImage();
 
-        // Load game over screen - FORÇA RELOAD TOTAL sem cache
+        
         Image tempGameOver = null;
         try {
             URL gameOverUrl = getClass().getResource("/assets/sprites/ui/game_over_screen.png");
             if (gameOverUrl != null) {
                 System.out.println("=== GAME OVER SCREEN DEBUG ===");
-                System.out.println("URL encontrada: " + gameOverUrl);
-                System.out.println("Protocolo: " + gameOverUrl.getProtocol());
-                System.out.println("Caminho completo: " + gameOverUrl.getPath());
+                System.out.println("URL found: " + gameOverUrl);
+                System.out.println("Protocol: " + gameOverUrl.getProtocol());
+                System.out.println("Full path: " + gameOverUrl.getPath());
                 
-                // Tenta carregar de múltiplas formas para evitar cache
+                
                 try {
-                    // Método 1: ImageIO (mais confiável para evitar cache)
+                    
                     java.awt.image.BufferedImage buffered = javax.imageio.ImageIO.read(gameOverUrl);
                     if (buffered != null) {
                         tempGameOver = buffered;
-                        System.out.println("Carregado via ImageIO - Dimensões: " + 
+                        System.out.println("Loaded via ImageIO - Dimensions: " + 
                                          buffered.getWidth() + "x" + buffered.getHeight());
                     }
                 } catch (Exception e1) {
-                    System.err.println("Falha no ImageIO: " + e1.getMessage());
+                    System.err.println("ImageIO failed: " + e1.getMessage());
                     
-                    // Método 2: Toolkit (fallback)
+                    // Method 2: Toolkit (fallback)
                     tempGameOver = Toolkit.getDefaultToolkit().createImage(gameOverUrl);
                     MediaTracker tracker = new MediaTracker(this);
                     tracker.addImage(tempGameOver, 0);
                     tracker.waitForAll();
-                    System.out.println("Carregado via Toolkit");
+                    System.out.println("Loaded via Toolkit");
                 }
                 
-                System.out.println("=== FIM DEBUG ===");
+                System.out.println("=== END DEBUG ===");
             } else {
-                System.err.println("ERRO: Game Over screen URL é NULL!");
-                System.err.println("Verifique se o arquivo existe em: /assets/sprites/ui/game_over_screen.png");
+                System.err.println("ERROR: Game Over screen URL is NULL!");
+                System.err.println("Check if file exists at: /assets/sprites/ui/game_over_screen.png");
             }
         } catch (Exception e) {
-            System.err.println("ERRO ao carregar game over screen: " + e.getMessage());
+            System.err.println("ERROR loading game over screen: " + e.getMessage());
             e.printStackTrace();
         }
         gameOverScreen = tempGameOver;
 
-        // Define áreas dos botões do Game Over (ajuste conforme sua sprite)
-        // Estas coordenadas são exemplos - ajuste conforme o design da sua sprite
-        playAgainButton = new Rectangle(680, 580, 250, 80);  // Botão "Play Again"
-        homeButton = new Rectangle(990, 580, 250, 80);       // Botão "Home"
+        
+        playAgainButton = new Rectangle(680, 580, 250, 80); 
+        homeButton = new Rectangle(990, 580, 250, 80);     
 
         // Load fish box variants
         String[] refs = new String[] {
@@ -216,7 +215,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
                     getClass().getResourceAsStream("/assets/fonts/Jersey10-Regular.ttf"));
             jerseyFont = baseFont.deriveFont(Font.BOLD, 28f);
         } catch (Exception e) {
-            System.err.println("Erro ao carregar fonte Jersey 10: " + e.getMessage());
+            System.err.println("Error loading Jersey 10 font: " + e.getMessage());
             e.printStackTrace();
             jerseyFont = new Font("Arial", Font.BOLD, 28);
         }
@@ -372,7 +371,8 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             }
 
             if (entity instanceof Shark) {
-                if (currentBait == BaitType.GOLDEN_FISH) {
+                
+                if (hookedFish != null || currentBait == BaitType.GOLDEN_FISH) {
                     if (hook.collidesWith(entity)) {
                         handleCollision(entity);
                     }
@@ -414,7 +414,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
                 currentBait = BaitType.WORM;
 
                 if (hook != null) {
-                    hook.setHookSprite("/assets/sprites/player/hook_mullet_fish.png", -35);
+                    hook.setHookSprite("/assets/sprites/player/hook_mullet_fish.png", -55);
                 }
             }
         } else if (entity instanceof JellyFish) {
@@ -489,7 +489,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     @Override
     public void mouseMoved(MouseEvent e) {
         if (isGameOverVisible) {
-            return; // Não mover o anzol durante o Game Over
+            return; // Don't move hook during Game Over
         }
         
         mouseY = e.getY();
@@ -515,7 +515,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         int x = e.getX();
         int y = e.getY();
 
-        // Se o Game Over está visível, verificar cliques nos botões
+        // If Game Over is visible, check button clicks
         if (isGameOverVisible) {
             if (playAgainButton.contains(x, y)) {
                 isGameOverVisible = false;
@@ -529,7 +529,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             }
         }
 
-        // Lógica normal do jogo
+        // Normal game logic
         if (fishBoxArea.contains(x, y) && hookY <= hookMinY + 20) {
             if (caughtGoldenFish > 0 && currentBait == BaitType.WORM && hookedFish == null) {
                 currentBait = BaitType.GOLDEN_FISH;
@@ -588,14 +588,14 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         // Ocean background
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
 
-        // Linha de pesca
+        // Fishing line
         Color currentLineColor = showShocked ? shockedLineColor : normalLineColor;
         g.setColor(currentLineColor);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(4));
         g2d.drawLine(767, 170, 767, hookY);
 
-        // Entidades
+        // Entities
         for (Entity entity : entities) {
             entity.draw(g);
         }
@@ -625,10 +625,10 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         }
         g.drawImage(boxImg, baseX, drawY, destW, destH, this);
 
-        // UI normal
+        // Normal UI
         drawUI(g);
 
-        // Game Over Screen - desenhado por cima de tudo
+        // Game Over Screen - drawn on top of everything
         if (isGameOverVisible) {
             drawGameOverScreen(g);
         }
@@ -667,20 +667,18 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     }
 
     private void drawGameOverScreen(Graphics g) {
-        // Desenha a sprite do Game Over no tamanho da tela (como background_ice)
+        // Draw Game Over sprite at screen size (like background_ice)
         int screenWidth = getWidth();
         int screenHeight = getHeight();
         
         if (gameOverScreen != null) {
-            // Desenha no tamanho completo da tela
+            // Draw at full screen size
             g.drawImage(gameOverScreen, 0, 0, screenWidth, screenHeight, this);
         } else {
-            // Fallback caso a imagem não carregue
             g.setColor(new Color(0, 0, 0, 180));
             g.fillRect(0, 0, screenWidth, screenHeight);
         }
         
-        // Desenha o texto com a quantidade de peixes
         g.setFont(getJerseyFont(50f, Font.PLAIN));
         g.setColor(new Color(0x6B686B));
         
@@ -688,11 +686,10 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         FontMetrics fm = g.getFontMetrics();
         int textWidth = fm.stringWidth(fishText);
         int textX = (screenWidth - textWidth) / 2 + 240;
-        int textY = screenHeight / 2 + 155; // Ajuste conforme necessário
+        int textY = screenHeight / 2 + 140; 
         
         g.drawString(fishText, textX, textY);
         
-        // Atualiza as posições dos botões invisíveis (ajuste conforme o layout da sua sprite)
         playAgainButton.setBounds(screenWidth / 2 - 245, screenHeight / 2 + 258, 230, 80);
         homeButton.setBounds(screenWidth / 2 + 10, screenHeight / 2 + 258, 230, 80);
     }
