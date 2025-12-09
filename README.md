@@ -90,7 +90,7 @@ At the end of the game:
 * The **total play time** is shown.
 * The game returns to the start screen.
 
-![Game Over Screen Screenshot](https://raw.githubusercontent.com/guilhermeeid/Ice-Fishing-OOP/refs/heads/main/IceFishing/bin/Sprites/game_over_printscreen.png)
+![Game Over Screen Screenshot](https://raw.githubusercontent.com/guilhermeeid/Ice-Fishing-OOP/refs/heads/main/IceFishing/src/assets/sprites/ui/game_over_screen.png)
 
 ---
 
