@@ -3,6 +3,7 @@ package OurGame.Screens;
 import OurGame.GameTest;
 import OurGame.Model.Entities.*;
 import OurGame.Model.Entity;
+import OurGame.Audio.SoundManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
@@ -69,8 +70,11 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
     private Font jerseyFont;
 
-    public Startgame(GameTest frame) {
+    private final SoundManager bgm;
+
+    public Startgame(GameTest frame, SoundManager bgm) {
         this.frame = frame;
+        this.bgm = bgm;
 
         loadCustomFont();
 
@@ -245,6 +249,10 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         hook = new Hook(this, "/assets/sprites/player/hook_worm.png", hookX, hookY);
         entities.add(hook);
 
+        if (bgm != null) {
+            bgm.playLoop(-6f);
+        }
+
         if (gameTimer != null && gameTimer.isRunning()) {
             gameTimer.stop();
         }
@@ -266,6 +274,12 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
         hook.setY(hookY);
         hook.updateBaseX(hookX);
+
+        // Keep hooked fish glued to the hook for logic (not only for drawing)
+        if (hookedFish != null) {
+            hookedFish.setX(hookX - hookedFish.getWidth() / 2);
+            hookedFish.setY(hookY + 30);
+        }
 
         for (Entity entity : entities) {
             entity.move(delta);
@@ -343,7 +357,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
             speed = 60 + random.nextInt(40);
         } else {
             newEntity = new MetalCan(this, "/assets/sprites/obstacles/metal_can.png", startX, startY);
-            speed = 40 + random.nextInt(30);
+            speed = 60 + random.nextInt(30);
         }
 
         if (newEntity != null) {

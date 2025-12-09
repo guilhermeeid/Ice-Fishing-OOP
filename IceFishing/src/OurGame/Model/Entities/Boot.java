@@ -21,9 +21,7 @@ public class Boot extends Entity {
     public void draw(Graphics g) {
         int w = getWidth();
         int h = getHeight();
-        // Inverte a lógica: flip quando movimento for POSITIVO (direita)
-        // Assim a bota original (virada para esquerda) fica correta indo para esquerda
-        // E é invertida quando vai para direita
+        
         boolean flip = getHorizontalMovement() > 0;
         currentSprite().draw(g, (int)x, (int)y, w, h, flip);
     }

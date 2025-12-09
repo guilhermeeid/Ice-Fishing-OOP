@@ -7,7 +7,7 @@ public class GrayFish extends Entity {
     private Startgame game;
     
     private static final long ANIMATION_SPEED = 250;
-    private static final double BASE_SPEED = 75;
+    private static final double BASE_SPEED = 220;
 
     public GrayFish(Startgame game, String fileName, int x, double y) {
         super(fileName, x, y);

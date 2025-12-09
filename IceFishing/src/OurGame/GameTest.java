@@ -2,6 +2,7 @@ package OurGame;
 
 import javax.swing.*;
 import OurGame.Screens.*;
+import OurGame.Audio.SoundManager;
 
 import java.awt.*;
 
@@ -12,6 +13,7 @@ public class GameTest extends JFrame {
     private Homepage homepage;
     private Instructions instructions;
     private Startgame startgame;
+    private SoundManager bgm;
 
     public GameTest() {
         setTitle("Ice Fishing");
@@ -23,9 +25,11 @@ public class GameTest extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        homepage = new Homepage(this);
-        instructions = new Instructions(this);
-        startgame = new Startgame(this);
+        bgm = new SoundManager("/assets/sounds/themeicefishing.wav");
+
+        homepage = new Homepage(this, bgm);
+        instructions = new Instructions(this, bgm);
+        startgame = new Startgame(this, bgm);
 
         mainPanel.add(homepage, "Homepage");
         mainPanel.add(instructions, "Instructions");
@@ -34,6 +38,8 @@ public class GameTest extends JFrame {
 
         add(mainPanel);
         setVisible(true);
+
+        bgm.playLoop(-12f);
     }
 
     public void startGame() {
@@ -43,6 +49,19 @@ public class GameTest extends JFrame {
     
     public void showScreen(String name) {
         cardLayout.show(mainPanel, name);
+        switch (name) {
+            case "Homepage":
+                bgm.playLoop(-12f);
+                break;
+            case "Instructions":
+                bgm.playLoop(-12f);
+                break;
+            case "Startgame":
+                bgm.playLoop(-6f);
+                break;
+            default:
+                break;
+        }
     }
 
     public static void main(String[] args) {

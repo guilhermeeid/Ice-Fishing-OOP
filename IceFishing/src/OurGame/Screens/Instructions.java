@@ -4,13 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import OurGame.GameTest;
+import OurGame.Audio.SoundManager;
 
 public class Instructions extends JPanel {
     
     private Image background;
     private Font jerseyFont;
 
-    public Instructions(GameTest frame) {
+    public Instructions(GameTest frame, SoundManager bgm) {
 
         background = new ImageIcon(getClass().getResource("/assets/sprites/ui/instructions_screen.png")).getImage();
         loadCustomFont();

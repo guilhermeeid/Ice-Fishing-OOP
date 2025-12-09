@@ -4,12 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import OurGame.GameTest;
+import OurGame.Audio.SoundManager;
 
 public class Homepage extends JPanel {
 
     private Image background;
 
-    public Homepage(GameTest frame) {
+    public Homepage(GameTest frame, SoundManager bgm) {
 
         background = new ImageIcon(getClass().getResource("/assets/sprites/ui/start_screen.png")).getImage();
 
