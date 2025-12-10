@@ -17,7 +17,7 @@ public class GameTest extends JFrame {
 
     public GameTest() {
         setTitle("Ice Fishing");
-        setSize(1920, 1080);
+        setSize(1554, 882);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);

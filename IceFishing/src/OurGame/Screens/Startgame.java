@@ -57,7 +57,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
     private final int hookMinY = 190;
     private final int hookMaxY = 845;
 
-    private Rectangle fishBoxArea = new Rectangle(280, 130, 280, 140);
+    private Rectangle fishBoxArea = new Rectangle(280, 110, 280, 140);
     private Rectangle wormCanArea = new Rectangle(1155, 150, 55, 100);
 
     private Timer gameTimer;
@@ -631,7 +631,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
         int destW = 280;
         int destH = 140;
         int baseX = 280;
-        int baseY = 130;
+        int baseY = 110;
         int drawY = baseY;
         if (idx > 0) {
             drawY = baseY - 40;
@@ -655,7 +655,7 @@ public class Startgame extends JPanel implements MouseMotionListener, MouseListe
 
         g.setFont(getJerseyFont(28f, Font.BOLD));
         g.setColor(Color.BLACK);
-        g.drawString("Fish: " + score, 430, 225);
+        g.drawString("Fish: " + score, 430, 205);
 
         g.setFont(getJerseyFont(20f, Font.PLAIN));
         g.setColor(Color.BLACK);
